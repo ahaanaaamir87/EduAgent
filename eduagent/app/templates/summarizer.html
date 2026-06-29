@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Summarizer{% endblock %}
+{% block content %}
+
+<div class="page-header" style="margin-bottom:18px;">
+  <h1>Summarizer 📄</h1>
+  <p>Paste any text or upload a PDF to get a clean, structured summary.</p>
+</div>
+
+<div class="feature-layout">
+  <div class="card">
+    <h3 style="font-size:14px; margin-bottom:14px;">Paste Text</h3>
+    <form method="post" action="/summarizer/text">
+      <div class="field">
+        <label>Title (optional)</label>
+        <div class="input-wrap"><input type="text" name="title" placeholder="e.g. Chapter 3 notes"></div>
+      </div>
+      <div class="field">
+        <label>Text to summarize</label>
+        <div class="input-wrap"><textarea name="text" rows="6" placeholder="Paste article, chapter, or notes here..." required></textarea></div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">✨ Summarize Text</button>
+    </form>
+
+    <h3 style="font-size:14px; margin:20px 0 12px;">Or Upload a PDF</h3>
+    <form method="post" action="/summarizer/pdf" enctype="multipart/form-data">
+      <div class="field">
+        <div class="input-wrap"><input type="file" name="file" accept=".pdf" required></div>
+      </div>
+      <button type="submit" class="btn btn-outline btn-block">📄 Summarize PDF</button>
+    </form>
+
+    <h3 style="font-size:14px; margin:22px 0 12px;">History</h3>
+    <div class="history-list">
+      {% for s in summaries %}
+      <a href="/summarizer/{{ s.id }}" class="history-item {{ 'active' if active_summary and active_summary.id == s.id }}">
+        <div class="t">{{ s.title }}</div>
+        <div class="d">{{ s.source_type|upper }} · {{ s.created_at.strftime('%b %d, %Y') }}</div>
+      </a>
+      {% else %}
+      <p style="font-size:12.5px; color:var(--text-muted);">No summaries yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card result-panel">
+    {% if active_summary %}
+      <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:16px;">
+        <h2 style="font-size:20px;">{{ active_summary.title }}</h2>
+        <span class="tag-pill">{{ active_summary.source_type|upper }}</span>
+      </div>
+      <div class="markdown-body" id="summary-content" data-raw="{{ active_summary.content }}"></div>
+    {% else %}
+      <div class="empty-state">
+        <div class="big">📄</div>
+        <p>Paste text or upload a PDF on the left to get a structured summary.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script>
+  const el = document.getElementById('summary-content');
+  if (el) { el.innerHTML = marked.parse(el.dataset.raw); }
+</script>
+{% endblock %}

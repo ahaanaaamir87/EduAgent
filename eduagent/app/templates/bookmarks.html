@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Bookmarks{% endblock %}
+{% block content %}
+
+<div class="page-header" style="margin-bottom:18px;">
+  <h1>Bookmarks 🔖</h1>
+  <p>Your saved notes for quick access.</p>
+</div>
+
+<div class="grid grid-2">
+  {% for n in notes %}
+  <a href="/notes/{{ n.id }}" class="card" style="display:block;">
+    <div style="display:flex; justify-content:space-between; align-items:start;">
+      <h3 style="font-size:15px;">{{ n.topic }}</h3>
+      <span>🔖</span>
+    </div>
+    <p style="font-size:12.5px; color:var(--text-muted); margin-top:6px;">{{ n.created_at.strftime('%b %d, %Y') }}</p>
+  </a>
+  {% else %}
+  <div class="card" style="grid-column: 1 / -1;">
+    <div class="empty-state"><div class="big">🔖</div><p>No bookmarks yet. Generate some notes first!</p></div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

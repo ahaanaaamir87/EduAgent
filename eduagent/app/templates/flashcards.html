@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Flashcards{% endblock %}
+{% block content %}
+
+<div class="page-header" style="margin-bottom:18px;">
+  <h1>Flashcards 🗂️</h1>
+  <p>Generate flashcards for any topic. Click a card to flip it.</p>
+</div>
+
+<div class="feature-layout">
+  <div class="card">
+    <h3 style="font-size:14px; margin-bottom:14px;">Generate New Flashcards</h3>
+    <form method="post" action="/flashcards/generate">
+      <div class="field">
+        <label>Topic</label>
+        <div class="input-wrap"><input type="text" name="topic" placeholder="e.g. Spanish Verbs" required></div>
+      </div>
+      <div class="field">
+        <label>Number of Cards</label>
+        <div class="input-wrap">
+          <select name="num_cards">
+            <option value="6">6 Cards</option>
+            <option value="8" selected>8 Cards</option>
+            <option value="12">12 Cards</option>
+            <option value="16">16 Cards</option>
+          </select>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <label class="switch"><input type="checkbox" name="use_rag" value="true"><span class="slider"></span></label>
+        Use my uploaded documents (RAG)
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top:8px;">✨ Generate Flashcards</button>
+    </form>
+
+    <h3 style="font-size:14px; margin:22px 0 12px;">History</h3>
+    <div class="history-list">
+      {% for s in sets %}
+      <a href="/flashcards/{{ s.id }}" class="history-item {{ 'active' if active_set and active_set.id == s.id }}">
+        <div class="t">{{ s.topic }}</div>
+        <div class="d">{{ s.cards()|length }} cards · {{ s.created_at.strftime('%b %d, %Y') }}</div>
+      </a>
+      {% else %}
+      <p style="font-size:12.5px; color:var(--text-muted);">No flashcard sets yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card result-panel">
+    {% if active_set %}
+      <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:18px;">
+        <h2 style="font-size:20px;">{{ active_set.topic }}</h2>
+        <span class="tag-pill">{{ active_set.cards()|length }} cards</span>
+      </div>
+      <div class="flip-grid">
+        {% for c in active_set.cards() %}
+        <div class="flip-card">
+          <div class="flip-inner">
+            <div class="flip-face flip-front">{{ c.front }}</div>
+            <div class="flip-face flip-back">{{ c.back }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="big">🗂️</div>
+        <p>Generate a flashcard set on the left to start revising.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

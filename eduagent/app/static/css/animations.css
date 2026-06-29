@@ -1,0 +1,369 @@
+/* ==========================================================================
+   EduAgent — Animations & Microinteractions
+   Fun, expressive, red/black theme
+   ========================================================================== */
+
+/* ---------- Keyframes ---------- */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); }
+  50%       { box-shadow: 0 0 0 8px rgba(220,38,38,0.18); }
+}
+@keyframes pulse-glow-strong {
+  0%, 100% { box-shadow: 0 4px 14px rgba(220,38,38,0.35); }
+  50%       { box-shadow: 0 4px 32px rgba(220,38,38,0.7), 0 0 60px rgba(220,38,38,0.25); }
+}
+@keyframes bounce-in {
+  0%   { transform: scale(0.3);  opacity: 0; }
+  50%  { transform: scale(1.08); opacity: 1; }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40%            { transform: translateY(-8px); opacity: 1; }
+}
+@keyframes typewriter-cursor {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+@keyframes ripple {
+  to { transform: scale(4); opacity: 0; }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes count-up-bounce {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+@keyframes sidebar-slide {
+  from { opacity: 0; transform: translateX(-30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes navbar-drop {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes robot-wiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  20%       { transform: rotate(-8deg) scale(1.05); }
+  40%       { transform: rotate(8deg) scale(1.05); }
+  60%       { transform: rotate(-4deg) scale(1.02); }
+  80%       { transform: rotate(4deg) scale(1.02); }
+}
+@keyframes splash-logo {
+  0%   { opacity: 0; transform: scale(0.5) translateY(20px); }
+  60%  { opacity: 1; transform: scale(1.1) translateY(-4px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes splash-fade-out {
+  0%   { opacity: 1; }
+  100% { opacity: 0; pointer-events: none; }
+}
+@keyframes progress-bar {
+  0%   { width: 0%; }
+  60%  { width: 75%; }
+  100% { width: 100%; }
+}
+@keyframes card-appear {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes msg-pop-right {
+  from { opacity: 0; transform: translateX(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes msg-pop-left {
+  from { opacity: 0; transform: translateX(-20px) scale(0.95); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes flip-bounce {
+  0%   { transform: rotateY(0deg); }
+  40%  { transform: rotateY(200deg); }
+  70%  { transform: rotateY(170deg); }
+  100% { transform: rotateY(180deg); }
+}
+
+/* ---------- Splash Screen ---------- */
+#edu-splash {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #0a0a0a;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px;
+}
+#edu-splash .splash-logo {
+  font-size: 72px;
+  animation: splash-logo 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+#edu-splash .splash-name {
+  font-family: "Sora", sans-serif;
+  font-size: 32px; font-weight: 800;
+  animation: fadeInUp 0.5s ease 0.4s both;
+}
+#edu-splash .splash-name .accent { color: #ef4444; }
+#edu-splash .splash-bar-wrap {
+  width: 200px; height: 3px;
+  background: #1c1c1c; border-radius: 99px; overflow: hidden;
+  margin-top: 8px;
+  animation: fadeInUp 0.4s ease 0.5s both;
+}
+#edu-splash .splash-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #dc2626, #ef4444);
+  border-radius: 99px;
+  animation: progress-bar 1.2s ease 0.6s both;
+}
+#edu-splash.hiding {
+  animation: splash-fade-out 0.4s ease forwards;
+}
+
+/* ---------- Page entry ---------- */
+.page-content { animation: fadeInUp 0.4s ease both; }
+.topbar       { animation: navbar-drop 0.35s ease both; }
+
+/* Sidebar stagger */
+.nav-link {
+  animation: sidebar-slide 0.4s ease both;
+  transition: background .15s ease, color .15s ease,
+              transform .15s ease, box-shadow .15s ease;
+}
+.nav-link:hover { transform: translateX(4px); }
+.nav-link.active {
+  animation: sidebar-slide 0.4s ease both, pulse-glow 2.5s ease-in-out infinite 0.5s;
+}
+.nav-link:nth-child(1)  { animation-delay: 0.05s; }
+.nav-link:nth-child(2)  { animation-delay: 0.08s; }
+.nav-link:nth-child(3)  { animation-delay: 0.11s; }
+.nav-link:nth-child(4)  { animation-delay: 0.14s; }
+.nav-link:nth-child(5)  { animation-delay: 0.17s; }
+.nav-link:nth-child(6)  { animation-delay: 0.20s; }
+.nav-link:nth-child(7)  { animation-delay: 0.23s; }
+.nav-link:nth-child(8)  { animation-delay: 0.26s; }
+.nav-link:nth-child(9)  { animation-delay: 0.29s; }
+.nav-link:nth-child(10) { animation-delay: 0.32s; }
+.nav-link:nth-child(11) { animation-delay: 0.35s; }
+.nav-link:nth-child(12) { animation-delay: 0.38s; }
+
+/* ---------- Cards ---------- */
+.card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  animation: card-appear 0.45s ease both;
+}
+.card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.5), 0 0 0 1px rgba(220,38,38,0.12);
+}
+.stat-card:hover .stat-value { color: #ef4444; transition: color 0.2s ease; }
+
+.grid-4 .card:nth-child(1) { animation-delay: 0.10s; }
+.grid-4 .card:nth-child(2) { animation-delay: 0.18s; }
+.grid-4 .card:nth-child(3) { animation-delay: 0.26s; }
+.grid-4 .card:nth-child(4) { animation-delay: 0.34s; }
+
+/* ---------- Buttons ---------- */
+.btn { position: relative; overflow: hidden; }
+.btn:active { transform: scale(0.95) !important; }
+.btn-primary:hover { animation: pulse-glow-strong 1.5s ease-in-out infinite; }
+.btn .ripple-wave {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+/* ---------- AI Thinking ---------- */
+.ai-thinking {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px; border-top-left-radius: 4px;
+  max-width: 160px;
+}
+.ai-thinking .robot-icon {
+  font-size: 20px;
+  animation: robot-wiggle 1s ease-in-out infinite;
+  display: inline-block;
+}
+.ai-thinking .dots { display: flex; gap: 4px; align-items: center; }
+.ai-thinking .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--red-500);
+  animation: dot-bounce 1.2s ease-in-out infinite;
+}
+.ai-thinking .dot:nth-child(2) { animation-delay: 0.2s; }
+.ai-thinking .dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ---------- Chat ---------- */
+.msg.user      { animation: msg-pop-right 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
+.msg.assistant { animation: msg-pop-left  0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
+.msg-bubble.typing::after {
+  content: "▋"; display: inline-block; margin-left: 2px;
+  color: var(--red-500);
+  animation: typewriter-cursor 0.7s steps(1) infinite;
+}
+
+/* ---------- Hero robot ---------- */
+.hero-robot { animation: float 3s ease-in-out infinite; display: inline-block; }
+
+/* ---------- Flashcards ---------- */
+.flip-card.flipped .flip-inner {
+  animation: flip-bounce 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+.flip-card:not(.flipped) .flip-inner { transition: transform 0.45s ease; }
+.flip-card:hover .flip-face { box-shadow: 0 8px 28px rgba(220,38,38,0.2); }
+
+/* ---------- Stat counter ---------- */
+.stat-value.counting { animation: count-up-bounce 0.4s ease; }
+
+/* ---------- Inputs ---------- */
+.input-wrap { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.input-wrap:focus-within { box-shadow: 0 0 0 3px rgba(220,38,38,0.18); }
+
+/* ---------- Skeleton shimmer ---------- */
+.skeleton {
+  background: linear-gradient(90deg,
+    var(--bg-surface-2) 25%, var(--bg-elevated) 50%, var(--bg-surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px; height: 48px;
+}
+
+/* ---------- Score banner ---------- */
+.score-banner { animation: bounce-in 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
+.score-banner .pct { animation: count-up-bounce 0.5s ease 0.4s both; }
+
+/* ---------- Tag pill ---------- */
+.tag-pill { animation: scaleIn 0.25s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+/* ---------- Upgrade card ---------- */
+.upgrade-card { transition: box-shadow 0.3s ease; }
+.upgrade-card:hover { box-shadow: 0 0 24px rgba(220,38,38,0.2); }
+
+/* ---------- Brand logo ---------- */
+.brand-mark { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.brand-mark:hover { transform: rotate(-8deg) scale(1.1); box-shadow: 0 6px 20px rgba(220,38,38,0.5); }
+
+/* ---------- History / list items ---------- */
+.history-item { transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease; }
+.history-item:hover { transform: translateX(4px); }
+.list-row { transition: background 0.15s ease, transform 0.15s ease; }
+.list-row:hover { background: var(--bg-surface-2); transform: translateX(3px); }
+
+/* ---------- Section stagger ---------- */
+.section-stagger > * { animation: fadeInUp 0.4s ease both; }
+.section-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.section-stagger > *:nth-child(2) { animation-delay: 0.12s; }
+.section-stagger > *:nth-child(3) { animation-delay: 0.19s; }
+.section-stagger > *:nth-child(4) { animation-delay: 0.26s; }
+.section-stagger > *:nth-child(5) { animation-delay: 0.33s; }
+.section-stagger > *:nth-child(6) { animation-delay: 0.40s; }
+
+/* ---------- Reduce motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  #edu-splash { display: none !important; }
+}
+
+/* --- Gryffindor animation overrides --- */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
+  50%       { box-shadow: 0 0 0 8px rgba(212,175,55,0.18); }
+}
+@keyframes pulse-glow-strong {
+  0%, 100% { box-shadow: 0 4px 14px rgba(139,0,0,0.45); }
+  50%       { box-shadow: 0 4px 32px rgba(212,175,55,0.5), 0 0 60px rgba(139,0,0,0.3); }
+}
+@keyframes gold-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.brand-mark:hover { transform: rotate(-8deg) scale(1.1); box-shadow: 0 6px 20px rgba(212,175,55,0.5) !important; }
+.splash-bar { background: linear-gradient(90deg, #8B0000, #D4AF37) !important; }
+#edu-splash .splash-name .accent { color: #D4AF37 !important; }
+
+/* --- HP Magical Particles --- */
+@keyframes float-particle {
+  0%   { transform: translateY(0px) rotate(0deg);   opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.3; }
+  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.1; transform: scale(0.8); }
+  50%       { opacity: 0.7; transform: scale(1.2); }
+}
+
+.magic-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1;
+  font-size: 10px;
+  color: #D4AF37;
+  animation: float-particle linear infinite;
+  user-select: none;
+}
+
+/* HP-flavored dashboard hero subtitle */
+.hero-card p { font-style: italic; }
+
+/* Cinzel headings feel more magical */
+.page-header h1 { letter-spacing: 0.04em; }
+.brand-name { letter-spacing: 0.05em; }
+
+/* Gold streak on cards */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+.card { position: relative; }
+
+/* Sidebar gold separator */
+.nav-section::after {
+  content: '✦ ✦ ✦';
+  display: block;
+  text-align: center;
+  color: rgba(212,175,55,0.2);
+  font-size: 10px;
+  letter-spacing: 6px;
+  margin: 8px 0;
+}

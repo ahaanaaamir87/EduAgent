@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Notes Generator{% endblock %}
+{% block content %}
+
+<div class="page-header" style="margin-bottom:18px;">
+  <h1>Notes Generator 📝</h1>
+  <p>Generate detailed, well-organized study notes on any topic.</p>
+</div>
+
+<div class="feature-layout">
+  <div class="card">
+    <h3 style="font-size:14px; margin-bottom:14px;">Generate New Notes</h3>
+    <form method="post" action="/notes/generate">
+      <div class="field">
+        <label>Topic</label>
+        <div class="input-wrap">
+          <input type="text" name="topic" placeholder="e.g. Photosynthesis, French Revolution..." required>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <label class="switch">
+          <input type="checkbox" name="use_rag" value="true">
+          <span class="slider"></span>
+        </label>
+        Use my uploaded documents (RAG)
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top:8px;">✨ Generate Notes</button>
+    </form>
+
+    <h3 style="font-size:14px; margin:22px 0 12px;">History</h3>
+    <div class="history-list">
+      {% for n in notes %}
+      <a href="/notes/{{ n.id }}" class="history-item {{ 'active' if active_note and active_note.id == n.id }}">
+        <div class="t">{{ n.topic }}</div>
+        <div class="d">{{ n.created_at.strftime('%b %d, %Y · %H:%M') }}</div>
+      </a>
+      {% else %}
+      <p style="font-size:12.5px; color:var(--text-muted);">No notes yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card result-panel">
+    {% if active_note %}
+      <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:16px;">
+        <h2 style="font-size:20px;">{{ active_note.topic }}</h2>
+        <span class="tag-pill">{{ active_note.created_at.strftime('%b %d, %Y') }}</span>
+      </div>
+      <div class="markdown-body" id="note-content" data-raw="{{ active_note.content }}"></div>
+    {% else %}
+      <div class="empty-state">
+        <div class="big">📝</div>
+        <p>Enter a topic on the left to generate detailed study notes.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script>
+  const el = document.getElementById('note-content');
+  if (el) { el.innerHTML = marked.parse(el.dataset.raw); }
+</script>
+{% endblock %}

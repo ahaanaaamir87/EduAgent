@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Quiz Generator{% endblock %}
+{% block content %}
+
+<div class="page-header" style="margin-bottom:18px;">
+  <h1>Quiz Generator ❓</h1>
+  <p>Generate a multiple-choice quiz on any topic and test yourself instantly.</p>
+</div>
+
+<div class="feature-layout">
+  <div class="card">
+    <h3 style="font-size:14px; margin-bottom:14px;">Generate New Quiz</h3>
+    <form method="post" action="/quiz/generate">
+      <div class="field">
+        <label>Topic</label>
+        <div class="input-wrap"><input type="text" name="topic" placeholder="e.g. Cell Biology" required></div>
+      </div>
+      <div class="field">
+        <label>Number of Questions</label>
+        <div class="input-wrap">
+          <select name="num_questions">
+            <option value="3">3 Questions</option>
+            <option value="5" selected>5 Questions</option>
+            <option value="8">8 Questions</option>
+            <option value="10">10 Questions</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Difficulty</label>
+        <div class="input-wrap">
+          <select name="difficulty">
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <label class="switch"><input type="checkbox" name="use_rag" value="true"><span class="slider"></span></label>
+        Use my uploaded documents (RAG)
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top:8px;">✨ Generate Quiz</button>
+    </form>
+
+    <h3 style="font-size:14px; margin:22px 0 12px;">History</h3>
+    <div class="history-list">
+      {% for q in quizzes %}
+      <a href="/quiz/{{ q.id }}" class="history-item {{ 'active' if active_quiz and active_quiz.id == q.id }}">
+        <div class="t">{{ q.topic }}</div>
+        <div class="d">{{ q.difficulty|capitalize }} · {{ q.questions()|length }} Qs {% if q.attempts %}· Best {{ q.best_score }}%{% endif %}</div>
+      </a>
+      {% else %}
+      <p style="font-size:12.5px; color:var(--text-muted);">No quizzes yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card result-panel">
+    {% if active_quiz %}
+      {% set questions = active_quiz.questions() %}
+      <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:18px;">
+        <h2 style="font-size:20px;">{{ active_quiz.topic }}</h2>
+        <span class="tag-pill">{{ active_quiz.difficulty|capitalize }}</span>
+      </div>
+
+      <div id="quiz-score-banner" class="score-banner" style="display:none;"></div>
+
+      <form id="quiz-take-form" data-quiz-id="{{ active_quiz.id }}"></form>
+    {% else %}
+      <div class="empty-state">
+        <div class="big">❓</div>
+        <p>Generate a quiz on the left to start testing your knowledge.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+  // Build quiz options safely via JS using a JSON blob (avoids template attribute collisions)
+  {% if active_quiz %}
+  const quizQuestions = {{ active_quiz.questions()|tojson }};
+  const container = document.getElementById('quiz-take-form');
+  container.innerHTML = '';
+  quizQuestions.forEach((q, qi) => {
+    const qDiv = document.createElement('div');
+    qDiv.className = 'quiz-q';
+    const qText = document.createElement('div');
+    qText.className = 'qtext';
+    qText.textContent = (qi + 1) + '. ' + q.question;
+    qDiv.appendChild(qText);
+
+    const optsDiv = document.createElement('div');
+    optsDiv.className = 'quiz-options';
+    (q.options || []).forEach((opt, oi) => {
+      const optDiv = document.createElement('div');
+      optDiv.className = 'quiz-option';
+      optDiv.dataset.qIdx = qi;
+      optDiv.dataset.oIdx = oi;
+      optDiv.innerHTML = '<span class="quiz-radio"></span><span>' + opt.replace(/</g,'&lt;') + '</span>';
+      optsDiv.appendChild(optDiv);
+    });
+    qDiv.appendChild(optsDiv);
+    container.appendChild(qDiv);
+  });
+
+  const submitWrap = document.createElement('button');
+  submitWrap.type = 'submit';
+  submitWrap.className = 'btn btn-primary';
+  submitWrap.id = 'quiz-submit-btn';
+  submitWrap.textContent = 'Submit Answers';
+  container.appendChild(submitWrap);
+
+  // re-init listeners now that options exist
+  initQuiz();
+  {% endif %}
+</script>
+{% endblock %}

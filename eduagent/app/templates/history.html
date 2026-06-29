@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}History{% endblock %}
+{% block content %}
+
+<div class="page-header" style="margin-bottom:18px;">
+  <h1>History 🕘</h1>
+  <p>Everything you've done with EduAgent, most recent first.</p>
+</div>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr><th>Activity</th><th>Type</th><th>When</th></tr>
+    </thead>
+    <tbody>
+      {% for a in activities %}
+      <tr>
+        <td>{{ a.title }}</td>
+        <td><span class="tag-pill">{{ a.kind|capitalize }}</span></td>
+        <td style="color:var(--text-muted);">{{ a.created_at.strftime('%b %d, %Y · %H:%M') }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3"><div class="empty-state"><div class="big">🕘</div><p>No history yet.</p></div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

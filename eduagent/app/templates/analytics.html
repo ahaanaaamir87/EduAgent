@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+
+<div class="page-header" style="margin-bottom:18px;">
+  <h1>Analytics 📊</h1>
+  <p>Your learning activity at a glance.</p>
+</div>
+
+<div class="grid grid-4" style="margin-bottom:20px;">
+  <div class="card stat-card">
+    <div class="stat-icon icon-red">💬</div>
+    <div class="stat-value">{{ totals.chats }}</div>
+    <div class="stat-label">AI Chat Messages</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-icon icon-purple">📝</div>
+    <div class="stat-value">{{ totals.notes }}</div>
+    <div class="stat-label">Notes Generated</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-icon icon-orange">❓</div>
+    <div class="stat-value">{{ totals.quizzes }}</div>
+    <div class="stat-label">Quizzes Created</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-icon icon-green">🎯</div>
+    <div class="stat-value">{{ avg_quiz_score }}%</div>
+    <div class="stat-label">Avg. Quiz Score</div>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3 style="font-size:15px; margin-bottom:16px;">Feature Usage Breakdown</h3>
+    {% for b in breakdown %}
+    <div class="bar-row">
+      <span class="label">{{ b.label }}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:{{ (b.count / (breakdown[0].count or 1) * 100)|round }}%;"></div></div>
+      <span class="count">{{ b.count }}</span>
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="big">📊</div><p>No activity yet.</p></div>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h3 style="font-size:15px; margin-bottom:16px;">Activity — Last 14 Days</h3>
+    <svg viewBox="0 0 360 160" width="100%" height="170">
+      {% set max_v = (trend_values|max) if trend_values and (trend_values|max) > 0 else 1 %}
+      {% set bw = 360 / (trend_values|length) %}
+      {% for v in trend_values %}
+        {% set h = (v / max_v * 110) %}
+        {% set x = loop.index0 * bw + 4 %}
+        <rect x="{{ x }}" y="{{ 130 - h }}" width="{{ bw - 6 }}" height="{{ h }}" rx="3" fill="#dc2626" opacity="0.85"/>
+      {% endfor %}
+      <line x1="0" y1="130" x2="360" y2="130" stroke="#2a2a2a" stroke-width="1"/>
+    </svg>
+    <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted); margin-top:4px;">
+      <span>{{ trend_labels[0] }}</span>
+      <span>{{ trend_labels[-1] }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-4" style="margin-top:20px;">
+  <div class="card stat-card">
+    <div class="stat-icon icon-blue">📄</div>
+    <div class="stat-value">{{ totals.summaries }}</div>
+    <div class="stat-label">Summaries</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-icon icon-blue">🗂️</div>
+    <div class="stat-value">{{ totals.flashcard_sets }}</div>
+    <div class="stat-label">Flashcard Sets</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-icon icon-green">📋</div>
+    <div class="stat-value">{{ totals.assignments }}</div>
+    <div class="stat-label">Assignments Solved</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-icon icon-red">⚡</div>
+    <div class="stat-value">{{ totals.chats + totals.notes + totals.summaries + totals.quizzes + totals.flashcard_sets + totals.assignments }}</div>
+    <div class="stat-label">Total Activities</div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Assignment Helper{% endblock %}
+{% block content %}
+
+<div class="page-header" style="margin-bottom:18px;">
+  <h1>Assignment Helper 📋</h1>
+  <p>Paste your assignment question and get a step-by-step explanation.</p>
+</div>
+
+<div class="feature-layout">
+  <div class="card">
+    <h3 style="font-size:14px; margin-bottom:14px;">New Question</h3>
+    <form method="post" action="/assignment-helper/solve">
+      <div class="field">
+        <label>Title (optional)</label>
+        <div class="input-wrap"><input type="text" name="title" placeholder="e.g. Physics HW Q3"></div>
+      </div>
+      <div class="field">
+        <label>Question</label>
+        <div class="input-wrap"><textarea name="question" rows="6" placeholder="Paste your assignment question here..." required></textarea></div>
+      </div>
+      <div class="toggle-row">
+        <label class="switch"><input type="checkbox" name="use_rag" value="true"><span class="slider"></span></label>
+        Use my uploaded documents (RAG)
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top:8px;">✨ Get Help</button>
+    </form>
+
+    <h3 style="font-size:14px; margin:22px 0 12px;">History</h3>
+    <div class="history-list">
+      {% for a in assignments %}
+      <a href="/assignment-helper/{{ a.id }}" class="history-item {{ 'active' if active_assignment and active_assignment.id == a.id }}">
+        <div class="t">{{ a.title }}</div>
+        <div class="d">{{ a.created_at.strftime('%b %d, %Y · %H:%M') }}</div>
+      </a>
+      {% else %}
+      <p style="font-size:12.5px; color:var(--text-muted);">No assignments yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card result-panel">
+    {% if active_assignment %}
+      <h2 style="font-size:18px; margin-bottom:6px;">{{ active_assignment.title }}</h2>
+      <div style="background:var(--bg-surface-2); border:1px solid var(--border-subtle); border-radius:10px; padding:12px 14px; font-size:13.5px; color:var(--text-secondary); margin-bottom:18px;">
+        {{ active_assignment.question }}
+      </div>
+      <div class="markdown-body" id="solution-content" data-raw="{{ active_assignment.solution }}"></div>
+    {% else %}
+      <div class="empty-state">
+        <div class="big">📋</div>
+        <p>Paste an assignment question on the left to get step-by-step help.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script>
+  const el = document.getElementById('solution-content');
+  if (el) { el.innerHTML = marked.parse(el.dataset.raw); }
+</script>
+{% endblock %}
