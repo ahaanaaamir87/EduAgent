@@ -22,11 +22,18 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-import ollama
+try:
+    import ollama
+except ImportError:
+    ollama = None
 
 from app.config import settings
 
-_ollama_client = ollama.Client(host=settings.OLLAMA_HOST)
+_ollama_client = (
+    ollama.Client(host=settings.OLLAMA_HOST)
+    if ollama is not None
+    else None
+)
 
 
 class BaseAgent:
@@ -49,7 +56,12 @@ class LocalOllamaAgent(BaseAgent):
     name = "EduAgent (Ollama local)"
 
     def __init__(self, model: str = None):
-        self.model = model or settings.OLLAMA_CHAT_MODEL
+    if ollama is None:
+        raise RuntimeError(
+            "Ollama is not installed. Install the ollama package or use AGENT_BACKEND=adk."
+        )
+
+    self.model = model or settings.OLLAMA_CHAT_MODEL
 
     def run(self, system_prompt: str, user_prompt: str, history: Optional[List[dict]] = None,
             max_tokens: Optional[int] = None) -> str:
