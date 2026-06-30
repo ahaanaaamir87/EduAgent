@@ -92,22 +92,26 @@ class LocalOllamaAgent(BaseAgent):
         return response["message"]["content"]
 
 
-class GoogleADKAgent(BaseAgent):
-    """Runs using Google ADK + Gemini."""
+class GeminiAgent(BaseAgent):
+    """Runs using Gemini directly via google-generativeai (no google-adk dependency)."""
 
-    name = "EduAgent (Google ADK)"
+    name = "EduAgent (Gemini)"
 
     def __init__(self, model: str = "gemini-1.5-flash"):
         try:
-            from google.adk.agents import Agent
-            from google.adk.runners import InMemoryRunner
+            import google.generativeai as genai
         except ImportError as e:
             raise RuntimeError(
-                "google-adk is not installed."
+                "google-generativeai is not installed."
             ) from e
 
-        self.Agent = Agent
-        self.Runner = InMemoryRunner
+        import os
+        api_key = os.getenv("GOOGLE_API_KEY", "")
+        if not api_key:
+            raise RuntimeError("GOOGLE_API_KEY is not set in environment variables.")
+
+        genai.configure(api_key=api_key)
+        self._genai = genai
         self.model = model
 
     def run(
@@ -117,18 +121,22 @@ class GoogleADKAgent(BaseAgent):
         history: Optional[List[dict]] = None,
         max_tokens: Optional[int] = None,
     ) -> str:
-
-        agent = self.Agent(
-            name="eduagent",
-            model=self.model,
-            instruction=system_prompt,
+        model = self._genai.GenerativeModel(
+            model_name=self.model,
+            system_instruction=system_prompt,
         )
 
-        runner = self.Runner(agent=agent)
+        chat_history = []
+        for turn in history or []:
+            role = "user" if turn["role"] == "user" else "model"
+            chat_history.append({"role": role, "parts": [turn["content"]]})
 
-        result = runner.run(user_prompt)
-
-        return str(result)
+        chat = model.start_chat(history=chat_history)
+        response = chat.send_message(
+            user_prompt,
+            generation_config={"max_output_tokens": max_tokens or 1024},
+        )
+        return response.text
 
 
 _agent_instance: Optional[BaseAgent] = None
@@ -141,7 +149,7 @@ def get_agent() -> BaseAgent:
         return _agent_instance
 
     if settings.AGENT_BACKEND.lower() == "adk":
-        _agent_instance = GoogleADKAgent()
+        _agent_instance = GeminiAgent()
     else:
         _agent_instance = LocalOllamaAgent()
 

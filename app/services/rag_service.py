@@ -24,7 +24,6 @@ from app.config import settings
 
 _chroma_client = chromadb.PersistentClient(path=settings.CHROMA_DIR)
 
-# Lazily-created clients, only instantiated for the backend actually in use.
 _ollama_client = None
 _genai_module = None
 
@@ -96,7 +95,7 @@ def chunk_text(text: str, chunk_size: int = None, overlap: int = None) -> List[s
 
 def embed_texts(texts: List[str]) -> List[List[float]]:
     """Embed a batch of texts using the configured backend (Ollama or Gemini)."""
-    if settings.AGENT_BACKEND == "adk":
+    if settings.AGENT_BACKEND.lower() == "adk":
         genai = _get_genai()
         vectors = []
         for t in texts:
