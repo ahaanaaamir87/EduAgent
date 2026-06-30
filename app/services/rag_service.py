@@ -4,25 +4,49 @@ Retrieval-Augmented Generation (RAG) service.
 Pipeline:
   1. Ingest a document (txt or pdf) -> extract text
   2. Chunk text into overlapping windows
-  3. Embed each chunk using an Ollama embedding model (e.g. nomic-embed-text)
+  3. Embed each chunk using either Ollama (AGENT_BACKEND=local) or
+     Google's text-embedding model (AGENT_BACKEND=adk)
   4. Store vectors + text in a per-user ChromaDB collection
   5. At query time, embed the query, retrieve top-k similar chunks,
      and return them as context for the LLM prompt.
 """
 from __future__ import annotations
 
+import os
 import uuid
 from pathlib import Path
 from typing import List
 
 import chromadb
-import ollama
 from pypdf import PdfReader
 
 from app.config import settings
 
 _chroma_client = chromadb.PersistentClient(path=settings.CHROMA_DIR)
-_ollama_client = ollama.Client(host=settings.OLLAMA_HOST)
+
+# Lazily-created clients, only instantiated for the backend actually in use.
+_ollama_client = None
+_genai_module = None
+
+
+def _get_ollama_client():
+    global _ollama_client
+    if _ollama_client is None:
+        import ollama
+        _ollama_client = ollama.Client(host=settings.OLLAMA_HOST)
+    return _ollama_client
+
+
+def _get_genai():
+    global _genai_module
+    if _genai_module is None:
+        import google.generativeai as genai
+        api_key = os.getenv("GOOGLE_API_KEY", "")
+        if not api_key:
+            raise RuntimeError("GOOGLE_API_KEY is not set in environment variables.")
+        genai.configure(api_key=api_key)
+        _genai_module = genai
+    return _genai_module
 
 
 def _collection_name(user_id: int) -> str:
@@ -71,12 +95,21 @@ def chunk_text(text: str, chunk_size: int = None, overlap: int = None) -> List[s
 
 
 def embed_texts(texts: List[str]) -> List[List[float]]:
-    """Embed a batch of texts using the configured Ollama embedding model."""
-    vectors = []
-    for t in texts:
-        resp = _ollama_client.embeddings(model=settings.OLLAMA_EMBED_MODEL, prompt=t)
-        vectors.append(resp["embedding"])
-    return vectors
+    """Embed a batch of texts using the configured backend (Ollama or Gemini)."""
+    if settings.AGENT_BACKEND == "adk":
+        genai = _get_genai()
+        vectors = []
+        for t in texts:
+            resp = genai.embed_content(model="models/text-embedding-004", content=t)
+            vectors.append(resp["embedding"])
+        return vectors
+    else:
+        client = _get_ollama_client()
+        vectors = []
+        for t in texts:
+            resp = client.embeddings(model=settings.OLLAMA_EMBED_MODEL, prompt=t)
+            vectors.append(resp["embedding"])
+        return vectors
 
 
 def ingest_document(user_id: int, filepath: str, doc_id: int) -> int:
