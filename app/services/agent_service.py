@@ -97,7 +97,7 @@ class GeminiAgent(BaseAgent):
 
     name = "EduAgent (Gemini)"
 
-    def __init__(self, model: str = "gemini-1.5-flash"):
+    def __init__(self, model: str = "gemini-2.5-flash-lite"):
         try:
             import google.generativeai as genai
         except ImportError as e:

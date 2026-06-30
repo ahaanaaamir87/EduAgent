@@ -99,7 +99,7 @@ def embed_texts(texts: List[str]) -> List[List[float]]:
         genai = _get_genai()
         vectors = []
         for t in texts:
-            resp = genai.embed_content(model="models/text-embedding-004", content=t)
+            resp = genai.embed_content(model="models/gemini-embedding-2", content=t)
             vectors.append(resp["embedding"])
         return vectors
     else:
